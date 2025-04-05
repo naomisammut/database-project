@@ -15,8 +15,8 @@ db = client["Database_HomeAssignment"]
 
 # Data model for player score
 class PlayerScore(BaseModel):
-    player_name: str
-    score: int
+    player_name: str # Accepts only strings
+    score: int # Accepts only integers
 
 @app.post("/upload_sprite", summary="Upload a sprite image")
 async def upload_sprite(file: UploadFile = File(...)):
@@ -47,6 +47,6 @@ async def add_score(score: PlayerScore):
     """
     Save a player's score in the 'scores' collection.
     """
-    score_doc = score.dict()
-    result = await db.scores.insert_one(score_doc)
-    return {"message": "Score recorded", "id": str(result.inserted_id)}
+    score_doc = score.dict() # Turns the input into a dictionary < prevents SQL injection
+    result = await db.scores.insert_one(score_doc) # Adds the data to the database
+    return {"message": "Score recorded", "id": str(result.inserted_id)} # Sends back a success message
