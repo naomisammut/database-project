@@ -17,15 +17,14 @@ collection showed up on Compass and Atlas
 inserted mock data for testing via local host - worked
 
 Task 3
-tested all 3 endpoints locally using Postman (/upload_sprite, /upload_audio, /player_score) - worked
+tested endpoints locally using Postman
 created and configured vercel.json
 deployed the API to Vercel and accessed it at https://database-project-five.vercel.app/docs
 
 Task 4
-Whitelisted local IP address, used my personal IP to make it that i can access it then back to 0.0.0.0/0
-Used Pydantic models to prevent SQL injection
-    Example: score = PlayerScore(...), then score.dict() safely inserted
-added IP whitelist entry and screenshot
+Whitelisted local IP address, used my personal IP to make it that i only can access it then back to 0.0.0.0/0
+Used if not ObjectId.is_valid(id) to prevent SQL injection
+added IP whitelist screenshot
 added comments to code explaining each line of code
 removed Word doc from repo and submitted it separately
 filled the README.md
