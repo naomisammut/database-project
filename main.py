@@ -31,7 +31,7 @@ async def get_all_sprites():
 async def get_sprite_by_id(id: str):
     """Retrieve a specific sprite by its ID.""" # Function description
     if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID format") # Check if ID is valid
+        raise HTTPException(status_code=400, detail="Invalid ID format") # Validate ID format
     sprite = await db.sprites.find_one({"_id": ObjectId(id)}) # Fetch sprite by ID
     if sprite is None:
         raise HTTPException(status_code=404, detail="Sprite not found") # Raise error if sprite does not exist
@@ -73,95 +73,103 @@ async def delete_sprite(id: str):
 # ====================
 # Audio Endpoints
 # ====================
-@app.get("/audio", summary="List All Audio Files", tags=["Audio"])
+@app.get("/audio", summary="List All Audio Files", tags=["Audio"]) # API endpoint to list all audio files
 async def get_all_audio():
-    """Retrieves all audio documents."""
-    audios = await db.audio.find().to_list(length=None)
-    return [{"id": str(audio["_id"]), "filename": audio["filename"]} for audio in audios]
+    """Retrieves all audio documents.""" # Function description
+    audios = await db.audio.find().to_list(length=None) # Retrieve all audio files from the database
+    return [{"id": str(audio["_id"]), "filename": audio["filename"]} for audio in audios] # Return list of audio files with ID and filename
 
-@app.get("/audio/{id}", summary="Retrieve an Audio File by ID", tags=["Audio"])
+
+@app.get("/audio/{id}", summary="Retrieve an Audio File by ID", tags=["Audio"]) # API endpoint to retrieve audio by ID
 async def get_audio_by_id(id: str):
-    """Retrieve a specific audio file by its ID."""
+    """Retrieve a specific audio file by its ID."""  # Function description
     if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID format")
-    audio = await db.audio.find_one({"_id": ObjectId(id)})
+        raise HTTPException(status_code=400, detail="Invalid ID format") # Validate ID format
+    audio = await db.audio.find_one({"_id": ObjectId(id)}) # Fetch specified audio file from DB
     if audio is None:
-        raise HTTPException(status_code=404, detail="Audio not found")
-    return {"id": str(audio["_id"]), "filename": audio["filename"]}
+        raise HTTPException(status_code=404, detail="Audio not found") # Error if not found
+    return {"id": str(audio["_id"]), "filename": audio["filename"]} # Return audio details
 
-@app.post("/audio", summary="Upload an Audio File", tags=["Audio"])
+
+@app.post("/audio", summary="Upload an Audio File", tags=["Audio"]) # API endpoint to upload audio files
 async def upload_audio(file: UploadFile = File(...)):
-    """Upload an audio file."""
-    content = await file.read()
+    """Upload an audio file."""  # Function description
+    content = await file.read() # Read the content of the uploaded file
     if not content:
-        raise HTTPException(status_code=400, detail="File is empty")
+        raise HTTPException(status_code=400, detail="File is empty") # Check if file is empty
     audio_doc = {"filename": file.filename, "content": content}
-    result = await db.audio.insert_one(audio_doc)
-    return {"message": "Audio file uploaded", "id": str(result.inserted_id)}
+    result = await db.audio.insert_one(audio_doc) # Insert into the DB
+    return {"message": "Audio file uploaded", "id": str(result.inserted_id)} # Return success message and ID
 
-@app.put("/audio/{id}", summary="Update an Audio File by ID", tags=["Audio"])
+
+@app.put("/audio/{id}", summary="Update an Audio File by ID", tags=["Audio"]) # Endpoint to update an existing audio file
 async def update_audio(id: str, updates: dict = Body(...)):
-    """Update details of an audio file by its ID."""
+    """Update details of an audio file by its ID."""  # Function description
     if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID format")
-    result = await db.audio.update_one({"_id": ObjectId(id)}, {"$set": updates})
+        raise HTTPException(status_code=400, detail="Invalid ID format") # Validate ID format
+    result = await db.audio.update_one({"_id": ObjectId(id)}, {"$set": updates}) # Update in DB
     if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Audio not updated")
-    return {"message": "Audio updated successfully"}
+        raise HTTPException(status_code=404, detail="Audio not updated") # Check if the update was successful
+    return {"message": "Audio updated successfully"} # Return success message 
 
-@app.delete("/audio/{id}", summary="Delete an Audio File by ID", tags=["Audio"])
+
+@app.delete("/audio/{id}", summary="Delete an Audio File by ID", tags=["Audio"]) # Endpoint to delete an existing audio file
 async def delete_audio(id: str):
-    """Delete an audio file by its ID."""
+    """Delete an audio file by its ID."""  # Function description
     if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID format")
-    result = await db.audio.delete_one({"_id": ObjectId(id)})
+        raise HTTPException(status_code=400, detail="Invalid ID format") # Validate ID format
+    result = await db.audio.delete_one({"_id": ObjectId(id)}) # Delete from DB with ID
     if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Audio not found")
-    return {"message": "Audio deleted successfully"}
+        raise HTTPException(status_code=404, detail="Audio not found") # If not found
+    return {"message": "Audio deleted successfully"} # Return success message
 
 # ====================
 # Player Score Endpoints
 # ====================
-@app.get("/scores", summary="List All Player Scores", tags=["Player Scores"])
+@app.get("/scores", summary="List All Player Scores", tags=["Player Scores"]) # Endpoint to list all player scores
 async def get_all_scores():
-    """Retrieves all player scores."""
-    scores = await db.scores.find().to_list(length=None)
-    return [{"id": str(score["_id"]), "player_name": score["player_name"], "score": score["score"]} for score in scores]
+    """Retrieves all player scores."""  # Function purpose
+    scores = await db.scores.find().to_list(length=None) # Fetch all scores from DB
+    return [{"id": str(score["_id"]), "player_name": score["player_name"], "score": score["score"]} for score in scores] # Return scores
 
-@app.get("/scores/{id}", summary="Retrieve a Player Score by ID", tags=["Player Scores"])
+
+@app.get("/scores/{id}", summary="Retrieve a Player Score by ID", tags=["Player Scores"]) # Endpoint to get a specific score by ID
 async def get_score_by_id(id: str):
-    """Retrieve a player score by its ID."""
+    """Retrieve a player score by its ID."""  # Function purpose
     if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID format")
-    score = await db.scores.find_one({"_id": ObjectId(id)})
+        raise HTTPException(status_code=400, detail="Invalid ID format") # Validate ID format
+    score = await db.scores.find_one({"_id": ObjectId(id)}) # search score in the DB using ID
     if score is None:
-        raise HTTPException(status_code=404, detail="Score not found")
-    return {"id": str(score["_id"]), "player_name": score["player_name"], "score": score["score"]}
+        raise HTTPException(status_code=404, detail="Score not found") # Return error if not found
+    return {"id": str(score["_id"]), "player_name": score["player_name"], "score": score["score"]} # Return score details
 
-@app.post("/scores", summary="Submit a Player Score", tags=["Player Scores"])
+
+@app.post("/scores", summary="Submit a Player Score", tags=["Player Scores"]) # Endpoint to submit a new player score
 async def add_score(score: PlayerScore):
-    """Record a player's score."""
+    """Record a player's score."""  # Function purpose
     score_doc = score.dict()
-    result = await db.scores.insert_one(score_doc)
-    return {"message": "Score recorded", "id": str(result.inserted_id)}
+    result = await db.scores.insert_one(score_doc)  # Insert score into DB
+    return {"message": "Score recorded", "id": str(result.inserted_id)} # Return confirmation with new score ID
 
-@app.put("/scores/{id}", summary="Update a Player Score by ID", tags=["Player Scores"])
+
+@app.put("/scores/{id}", summary="Update a Player Score by ID", tags=["Player Scores"]) # Endpoint to update a score by ID
 async def update_score(id: str, updates: PlayerScore = Body(...)):
-    """Update a player score by its ID."""
+    """Update a player score by its ID."""  # Function purpose
     if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID format")
+        raise HTTPException(status_code=400, detail="Invalid ID format") # Validate ID format
     updates_dict = updates.dict(exclude_unset=True)
     result = await db.scores.update_one({"_id": ObjectId(id)}, {"$set": updates_dict})
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Score not updated")
-    return {"message": "Score updated successfully"}
+    return {"message": "Score updated successfully"} # Return success message
 
-@app.delete("/scores/{id}", summary="Delete a Player Score by ID", tags=["Player Scores"])
+
+@app.delete("/scores/{id}", summary="Delete a Player Score by ID", tags=["Player Scores"]) # Endpoint to delete a score by ID
 async def delete_score(id: str):
-    """Delete a player score by its ID."""
+    """Delete a player score by its ID."""  # Function purpose
     if not ObjectId.is_valid(id):
-        raise HTTPException(status_code=400, detail="Invalid ID format")
-    result = await db.scores.delete_one({"_id": ObjectId(id)})
+        raise HTTPException(status_code=400, detail="Invalid ID format") # Validate ID format
+    result = await db.scores.delete_one({"_id": ObjectId(id)})  # Attempt to delete score from DB
     if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Score not found")
-    return {"message": "Score deleted successfully"}
+        raise HTTPException(status_code=404, detail="Score not found") # Score doesn't exist
+    return {"message": "Score deleted successfully"} # Confirm deletion
